@@ -1,0 +1,16 @@
+{
+    "name": "mst/mst-contentfallback",
+    "description": "try to load translated content on fallback rules",
+    "type": "typo3-cms-extension",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "MST\\MstContentfallback\\": "Classes/"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "mst_contentfallback"
+        }
+    }
+}
