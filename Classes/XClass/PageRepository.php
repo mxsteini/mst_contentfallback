@@ -125,15 +125,18 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                             ->setMaxResults(1)
                             ->executeQuery()
                             ->fetchAssociative();
+
                         // MST: exit if somthing is found
-                        if ($olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']] &&
-                            $olrow[$tableControl['languageField']] == $sys_language_content) {
-                            $olrow = null;
-                            $row = null;
-                            break;
-                        }
-                        if (is_array($olrow) && $olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']] === 0) {
-                            break;
+                        if (is_array($olrow) && isset($GLOBALS['TCA'][$table]['ctrl']['enablecolumns']) && isset($GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled'])) {
+                            if ($olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']] &&
+                                $olrow[$tableControl['languageField']] == $sys_language_content) {
+                                $olrow = null;
+                                $row = null;
+                                break;
+                            }
+                            if (is_array($olrow) && !$olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']]) {
+                                break;
+                            }
                         }
                     }
 
