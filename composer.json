@@ -1,16 +1,45 @@
 {
-    "name": "mst/mst-contentfallback",
-    "description": "try to load translated content on fallback rules",
-    "type": "typo3-cms-extension",
-    "license": "proprietary",
-    "autoload": {
-        "psr-4": {
-            "MST\\MstContentfallback\\": "Classes/"
-        }
+  "name": "mst/mst-contentfallback",
+  "description": "try to load translated content on fallback rules",
+  "type": "typo3-cms-extension",
+  "license": "proprietary",
+  "config": {
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin",
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true
     },
-    "extra": {
-        "typo3/cms": {
-            "extension-key": "mst_contentfallback"
-        }
+    "platform": {
+      "php": "7.4.1"
     }
+  },
+  "require": {
+    "typo3/cms-core": "^11.4"
+  },
+  "require-dev": {
+    "typo3/testing-framework": "*"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MST\\MstContentfallback\\Tests\\": "Tests"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "MST\\MstContentfallback\\": "Classes/"
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "mkdir -p .Build/Web/typo3conf/ext/",
+      "[ -L .Build/Web/typo3conf/ext/mst_contentfallback ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/mst_contentfallback"
+    ]
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "mst_contentfallback",
+      "web-dir": ".Build/Web"
+    }
+  }
 }

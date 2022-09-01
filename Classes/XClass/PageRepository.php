@@ -101,10 +101,8 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                     $languageAspect = $this->context->getAspect('language');
                     $fallbackChain = $languageAspect->get('fallbackChain');
                     // MST: append fallbackchain to requested language
-//                    print_r($sys_language_content);
-//                    print_r($fallbackChain);
                     $fallbackChain = [$sys_language_content, ...$fallbackChain];
-//                    print_r($fallbackChain); exit;
+
                     // MST: load content by fallbackChain
                     foreach ($fallbackChain as $overlay_language_content) {
                         $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
@@ -128,7 +126,7 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                             ->executeQuery()
                             ->fetchAssociative();
                         // MST: exit if somthing is found
-                        if ($olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']] === 1 &&
+                        if ($olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']] &&
                             $olrow[$tableControl['languageField']] == $sys_language_content) {
                             $olrow = null;
                             $row = null;
