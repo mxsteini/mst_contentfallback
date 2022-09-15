@@ -26,8 +26,8 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
      * @param array $row Record to overlay. Must contain uid, pid and $table]['ctrl']['languageField']
      * @param LanguageAspect|int|null $sys_language_content Pointer to the sys_language uid for content on the site.
      * @param string $OLmode Overlay mode. If "hideNonTranslated" then records without translation will not be returned  un-translated but unset (and return value is NULL)
-     * @return mixed Returns the input record, possibly overlaid with a translation.  But if $OLmode is "hideNonTranslated" then it will return NULL if no translation is found.
      * @throws \UnexpectedValueException
+     * @return mixed Returns the input record, possibly overlaid with a translation.  But if $OLmode is "hideNonTranslated" then it will return NULL if no translation is found.
      */
     public function getRecordOverlay($table, $row, $sys_language_content = null, $OLmode = '')
     {
@@ -143,19 +143,19 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                     $this->versionOL($table, $olrow);
                     // Merge record content by traversing all fields:
                     if (is_array($olrow)) {
-                            if (isset($olrow['_ORIG_uid'])) {
-                                $row['_ORIG_uid'] = $olrow['_ORIG_uid'];
+                        if (isset($olrow['_ORIG_uid'])) {
+                            $row['_ORIG_uid'] = $olrow['_ORIG_uid'];
+                        }
+                        if (isset($olrow['_ORIG_pid'])) {
+                            $row['_ORIG_pid'] = $olrow['_ORIG_pid'];
+                        }
+                        foreach ($row as $fN => $fV) {
+                            if ($fN !== 'uid' && $fN !== 'pid' && array_key_exists($fN, $olrow)) {
+                                $row[$fN] = $olrow[$fN];
+                            } elseif ($fN === 'uid') {
+                                $row['_LOCALIZED_UID'] = $olrow['uid'];
                             }
-                            if (isset($olrow['_ORIG_pid'])) {
-                                $row['_ORIG_pid'] = $olrow['_ORIG_pid'];
-                            }
-                            foreach ($row as $fN => $fV) {
-                                if ($fN !== 'uid' && $fN !== 'pid' && array_key_exists($fN, $olrow)) {
-                                    $row[$fN] = $olrow[$fN];
-                                } elseif ($fN === 'uid') {
-                                    $row['_LOCALIZED_UID'] = $olrow['uid'];
-                                }
-                            }
+                        }
                     } elseif ($OLmode === 'hideNonTranslated' && (int)$row[$tableControl['languageField']] === 0) {
                         // Unset, if non-translated records should be hidden. ONLY done if the source
                         // record really is default language and not [All] in which case it is allowed.
