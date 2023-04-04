@@ -69,7 +69,7 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                     $queryBuilder->setRestrictions(
                         GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $this->context)
                     );
-                    if ($this->versioningWorkspaceId > 0) {
+                    if ($this->context->getPropertyFromAspect('workspace', 'id', 0) > 0) {
                         // If not in live workspace, remove query based "enable fields" checks, it will be done in versionOL()
                         // @see functional workspace test createLocalizedNotHiddenWorkspaceContentHiddenInLive()
                         $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
@@ -82,7 +82,9 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                         // versioned record (e.g. new version) or both (common for modifying, moving etc).
                         if ($this->hasTableWorkspaceSupport($table)) {
                             $queryBuilder->getRestrictions()->removeByType(FrontendWorkspaceRestriction::class);
-                            $queryBuilder->getRestrictions()->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $this->versioningWorkspaceId));
+                            $queryBuilder->getRestrictions()->add(
+                                GeneralUtility::makeInstance(WorkspaceRestriction::class, 
+                                $this->context->getPropertyFromAspect('workspace', 'id', 0)));
                             $queryBuilder->orderBy('t3ver_wsid', 'ASC');
                         }
                     }
