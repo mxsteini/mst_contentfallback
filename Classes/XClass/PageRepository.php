@@ -83,7 +83,7 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                         if ($this->hasTableWorkspaceSupport($table)) {
                             $queryBuilder->getRestrictions()->removeByType(FrontendWorkspaceRestriction::class);
                             $queryBuilder->getRestrictions()->add(
-                                GeneralUtility::makeInstance(WorkspaceRestriction::class, 
+                                GeneralUtility::makeInstance(WorkspaceRestriction::class,
                                 $this->context->getPropertyFromAspect('workspace', 'id', 0)));
                             $queryBuilder->orderBy('t3ver_wsid', 'ASC');
                         }
@@ -129,16 +129,38 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                             ->fetchAssociative();
 
                         // MST: exit if somthing is found
-                        if (is_array($olrow) && isset($GLOBALS['TCA'][$table]['ctrl']['enablecolumns']) && isset($GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled'])) {
-                            if ($olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']] &&
-                                $olrow[$tableControl['languageField']] == $sys_language_content) {
-                                $olrow = null;
-                                $row = null;
-                                break;
-                            }
-                            if (is_array($olrow) && !$olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']]) {
-                                break;
-                            }
+
+                        if (!is_array($olrow)) {
+                            // no overlay record found => try another fallback language
+                            continue;
+                        }
+
+                        // overlay record found
+
+                        if (!isset($GLOBALS['TCA'][$table]['ctrl']['enablecolumns'])) {
+                            // table has no enablecolumn => no further checks needed => keep overlay record
+                            break;
+                        }
+
+                        if (!isset($GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled'])) {
+                            // table has no disabled column => no further checks needed => keep overlay record
+                            break;
+                        }
+
+                        if (!$olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']]) {
+                            // overlay record is enabled => keep overlay record
+                            break;
+                        }
+
+                        // overlay record is hidden
+
+                        if ($olrow[$tableControl['languageField']] == $sys_language_content) {
+                            // The overlay record is actually in the requested language and is hidden, as indicated above.
+                            // In this case, we do not want to display the record in the default language.
+                            // Therefore, we clear both the overlay and original record to prevent display.
+                            $olrow = null;
+                            $row = null;
+                            break;
                         }
                     }
 
