@@ -83,7 +83,7 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                         if ($this->hasTableWorkspaceSupport($table)) {
                             $queryBuilder->getRestrictions()->removeByType(FrontendWorkspaceRestriction::class);
                             $queryBuilder->getRestrictions()->add(
-                                GeneralUtility::makeInstance(WorkspaceRestriction::class, 
+                                GeneralUtility::makeInstance(WorkspaceRestriction::class,
                                 $this->context->getPropertyFromAspect('workspace', 'id', 0)));
                             $queryBuilder->orderBy('t3ver_wsid', 'ASC');
                         }
@@ -139,6 +139,9 @@ class PageRepository extends \TYPO3\CMS\Core\Domain\Repository\PageRepository im
                             if (is_array($olrow) && !$olrow[$GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']]) {
                                 break;
                             }
+                        }
+                        if (is_array($olrow) && !isset($GLOBALS['TCA'][$table]['ctrl']['enablecolumns'])) {
+                            break;
                         }
                     }
 
